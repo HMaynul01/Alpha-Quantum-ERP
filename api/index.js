@@ -901,9 +901,51 @@ export default async function handler(req, res) {
     if (!isCubeAdmin(authUser)) return res.status(403).json({ error: 'Admin only' });
     try {
       const { key, value } = req.body;
-      await sql`INSERT INTO settings (cube_id, key, value) VALUES (${cubeId||null}, ${key}, ${value})
-        ON CONFLICT (cube_id, key) DO UPDATE SET value=EXCLUDED.value, updated_at=NOW()`;
+      // Always store as valid JSON in the JSONB column
+      const jsonValue = (value === null || value === undefined) ? null
+        : (typeof value === 'object') ? JSON.stringify(value)
+        : JSON.stringify(value); // wraps strings/numbers/booleans as JSON
+      await sql`INSERT INTO settings (cube_id, key, value) VALUES (${cubeId||null}, ${key}, ${jsonValue}::jsonb)
+        ON CONFLICT (cube_id, key) DO UPDATE SET value=EXCLUDED.value::jsonb, updated_at=NOW()`;
       return res.status(200).json({ ok: true });
+    } catch (e) { return res.status(500).json({ error: e.message }); }
+  }
+
+  // ── CUBE SETTINGS (PATCH) ─────────────────────────────────────────────────
+  if (route === 'cube/settings' && req.method === 'PATCH') {
+    if (!isCubeAdmin(authUser)) return res.status(403).json({ error: 'Admin only' });
+    try {
+      if (!cubeId) return res.status(400).json({ error: 'No cube associated with your account' });
+      const { company_name, accent_color, theme, language, currency, timezone, logo_url } = req.body;
+      const newSettings = JSON.stringify({ accent_color, theme, language, currency, timezone });
+      if (company_name) {
+        await sql`UPDATE cubes SET company_name=${company_name}, settings=${newSettings}::jsonb, updated_at=NOW() WHERE id=${cubeId}`;
+      } else {
+        await sql`UPDATE cubes SET settings=${newSettings}::jsonb, updated_at=NOW() WHERE id=${cubeId}`;
+      }
+      if (logo_url) await sql`UPDATE cubes SET logo_url=${logo_url}, updated_at=NOW() WHERE id=${cubeId}`;
+      return res.status(200).json({ ok: true });
+    } catch (e) { return res.status(500).json({ error: e.message }); }
+  }
+
+  // ── CUBE FEATURES (PATCH) ─────────────────────────────────────────────────
+  if (route === 'cube/features' && req.method === 'PATCH') {
+    if (!isCubeAdmin(authUser)) return res.status(403).json({ error: 'Admin only' });
+    try {
+      if (!cubeId) return res.status(400).json({ error: 'No cube associated' });
+      const { features } = req.body;
+      await sql`UPDATE cubes SET features=${JSON.stringify(features)}::jsonb, updated_at=NOW() WHERE id=${cubeId}`;
+      return res.status(200).json({ ok: true });
+    } catch (e) { return res.status(500).json({ error: e.message }); }
+  }
+
+  // ── AUDIT LOG ─────────────────────────────────────────────────────────────
+  if (route === 'audit-log' && req.method === 'GET') {
+    try {
+      const rows = isCreator(authUser)
+        ? await sql`SELECT * FROM audit_log ORDER BY created_at DESC LIMIT 200`
+        : await sql`SELECT * FROM audit_log WHERE cube_id=${cubeId} ORDER BY created_at DESC LIMIT 200`;
+      return res.status(200).json({ logs: toDocs(rows) });
     } catch (e) { return res.status(500).json({ error: e.message }); }
   }
 

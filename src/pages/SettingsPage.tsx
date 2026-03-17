@@ -1,77 +1,91 @@
-// src/pages/SettingsPage.tsx — Alpha Quantum ERP v16
+// src/pages/SettingsPage.tsx — v18 Fixed
 import { useState, useEffect } from 'react'
 import { api } from '../lib/api'
 import { useAuth } from '../lib/AuthContext'
 import { useTheme } from '../lib/ThemeContext'
 
 type Tab = 'Company' | 'Finance' | 'Notifications' | 'Security' | 'Theme'
-const TABS: Tab[] = ['Company', 'Finance', 'Notifications', 'Security', 'Theme']
 
 export default function SettingsPage() {
-  const { user }               = useAuth()
+  const { user } = useAuth()
   const { theme, toggleTheme } = useTheme()
-  const [tab, setTab]           = useState<Tab>('Company')
-  const [settings, setSettings] = useState<Record<string,unknown>>({})
-  const [loading, setLoading]   = useState(true)
-  const [saving, setSaving]     = useState(false)
-  const [msg, setMsg]           = useState('')
-  const [err, setErr]           = useState('')
+  const [tab, setTab]     = useState<Tab>('Company')
+  const [s, setS]         = useState<Record<string, string>>({})
+  const [loading, setL]   = useState(true)
+  const [saving, setSaving] = useState(false)
+  const [msg, setMsg]     = useState('')
+  const [err, setErr]     = useState('')
+  const [curPw, setCurPw] = useState('')
+  const [newPw, setNewPw] = useState('')
+  const [confPw, setConfPw] = useState('')
+  const [pwMsg, setPwMsg] = useState('')
+  const [pwErr, setPwErr] = useState('')
+  const [savingPw, setSavingPw] = useState(false)
 
-  const [curPass, setCurPass]     = useState('')
-  const [newPass, setNewPass]     = useState('')
-  const [confPass, setConfPass]   = useState('')
-  const [passMsg, setPassMsg]     = useState('')
-  const [passErr, setPassErr]     = useState('')
-  const [changingPass, setChanging] = useState(false)
-
-  const isSu = ['creator','cube_admin','superuser'].includes(user?.role || '')
+  const isSu = ['creator', 'cube_admin', 'superuser'].includes(user?.role || '')
 
   useEffect(() => {
-    api.get<{ settings: Record<string,unknown> }>('/settings')
-      .then(d => setSettings(d.settings || {}))
+    api.get<{ settings: Record<string, unknown> }>('/settings')
+      .then(d => {
+        // Unwrap JSONB values (they come back as JS values, convert to strings for form)
+        const flat: Record<string, string> = {}
+        Object.entries(d.settings || {}).forEach(([k, v]) => {
+          flat[k] = typeof v === 'object' ? JSON.stringify(v) : String(v ?? '')
+        })
+        setS(flat)
+      })
       .catch(() => {})
-      .finally(() => setLoading(false))
+      .finally(() => setL(false))
   }, [])
 
-  function set(key: string, val: unknown) {
-    setSettings(s => ({ ...s, [key]: val }))
-  }
+  function set(key: string, val: string) { setS(p => ({ ...p, [key]: val })) }
+  function g(key: string, def = '') { return s[key] ?? def }
 
   async function save() {
     setSaving(true); setMsg(''); setErr('')
     try {
-      const entries = Object.entries(settings)
-      await Promise.all(entries.map(([key, value]) =>
+      const toSave = Object.entries(s).filter(([, v]) => v !== undefined && v !== '')
+      await Promise.all(toSave.map(([key, value]) =>
         api.post('/settings', { key, value })
       ))
-      setMsg('Settings saved successfully ✓')
-    } catch(e: unknown) {
+      setMsg('✓ Settings saved')
+      setTimeout(() => setMsg(''), 3000)
+    } catch (e: unknown) {
       setErr(e instanceof Error ? e.message : 'Save failed')
-    } finally { setSaving(false) }
+    }
+    setSaving(false)
   }
 
-  async function changePassword() {
-    if (!newPass || !confPass || !curPass) { setPassErr('All password fields required'); return }
-    if (newPass !== confPass) { setPassErr('New passwords do not match'); return }
-    if (newPass.length < 8)   { setPassErr('Password must be at least 8 characters'); return }
-    setChanging(true); setPassErr(''); setPassMsg('')
+  async function changePw() {
+    if (!curPw || !newPw || !confPw) { setPwErr('All fields required'); return }
+    if (newPw !== confPw) { setPwErr('Passwords do not match'); return }
+    if (newPw.length < 8) { setPwErr('Minimum 8 characters'); return }
+    setSavingPw(true); setPwErr(''); setPwMsg('')
     try {
-      await api.post('/users/change-password', { current_password: curPass, new_password: newPass })
-      setPassMsg('Password changed successfully ✓')
-      setCurPass(''); setNewPass(''); setConfPass('')
-    } catch(e: unknown) {
-      setPassErr(e instanceof Error ? e.message : 'Failed to change password')
-    } finally { setChanging(false) }
+      await api.post('/users/change-password', { current_password: curPw, new_password: newPw })
+      setPwMsg('✓ Password changed'); setCurPw(''); setNewPw(''); setConfPw('')
+      setTimeout(() => setPwMsg(''), 3000)
+    } catch (e: unknown) { setPwErr(e instanceof Error ? e.message : 'Failed') }
+    setSavingPw(false)
   }
 
-  const inp = (key: string, label: string, type = 'text', placeholder = '') => (
-    <div className="form-row">
+  const Field = ({ k, label, type = 'text', ph = '' }: { k: string; label: string; type?: string; ph?: string }) => (
+    <div style={{ marginBottom: '.85rem' }}>
       <label className="label">{label}</label>
-      <input className="input" type={type} placeholder={placeholder}
-        value={String(settings[key] || '')}
-        onChange={e => set(key, e.target.value)} />
+      <input className="input" type={type} placeholder={ph} value={g(k)} onChange={e => set(k, e.target.value)} disabled={!isSu} />
     </div>
   )
+
+  const SelectField = ({ k, label, options }: { k: string; label: string; options: string[] }) => (
+    <div style={{ marginBottom: '.85rem' }}>
+      <label className="label">{label}</label>
+      <select className="input" value={g(k)} onChange={e => set(k, e.target.value)} disabled={!isSu}>
+        {options.map(o => <option key={o} value={o}>{o}</option>)}
+      </select>
+    </div>
+  )
+
+  if (loading) return <div className="loading-full"><div className="spinner" /></div>
 
   return (
     <div className="page-content">
@@ -82,114 +96,119 @@ export default function SettingsPage() {
         </div>
         {isSu && (
           <button className="btn btn-primary" onClick={save} disabled={saving}>
-            {saving ? <><div className="spinner" style={{width:14,height:14,borderWidth:2}}/> Saving…</> : '💾 Save Settings'}
+            {saving ? '⟳ Saving…' : '💾 Save Settings'}
           </button>
         )}
       </div>
 
-      {msg && <div className="alert alert-success">{msg}</div>}
-      {err && <div className="alert alert-error">{err}</div>}
+      {msg && <div className="alert alert-success" style={{ marginBottom: '1rem' }}>{msg}</div>}
+      {err && <div className="alert alert-error"   style={{ marginBottom: '1rem' }}>⚠️ {err}</div>}
 
-      {/* Tabs */}
-      <div style={{ display:'flex', gap:'.4rem', marginBottom:'1.5rem', flexWrap:'wrap' }}>
-        {TABS.map(t => (
-          <button key={t} className={`btn btn-sm ${tab===t?'btn-primary':'btn-secondary'}`}
-            onClick={() => setTab(t)}>{t}</button>
+      {/* Tab bar */}
+      <div className="tab-bar" style={{ marginBottom: '1.25rem' }}>
+        {(['Company','Finance','Notifications','Security','Theme'] as Tab[]).map(t => (
+          <button key={t} className={`tab-btn${tab === t ? ' active' : ''}`} onClick={() => setTab(t)}>{t}</button>
         ))}
       </div>
 
-      <div className="card" style={{ maxWidth:680 }}>
+      <div className="card">
+        {/* ── COMPANY ─────────────────────────────────────── */}
         {tab === 'Company' && (
           <div>
-            <div className="card-title" style={{ marginBottom:'1.25rem' }}>Company Information</div>
-            {inp('company_name',    'Company Name',    'text', 'Alpha Ultimate Ltd.')}
-            {inp('company_cr',      'CR Number',       'text', '1234567890')}
-            {inp('company_vat',     'VAT Number',      'text', '300xxxxxxxxx1003')}
-            {inp('company_address', 'Address',         'text', 'Riyadh, Saudi Arabia')}
-            {inp('company_phone',   'Phone',           'tel',  '+966 5x xxx xxxx')}
-            {inp('company_email',   'Email',           'email','info@alpha-01.info')}
-            {inp('company_website', 'Website',         'url',  'https://alpha-01.info')}
+            <div className="card-title">Company Information</div>
+            <Field k="company_name"    label="Company Name"    ph="Alpha Ultimate Ltd" />
+            <Field k="company_cr"      label="CR Number"       ph="1234567890" />
+            <Field k="company_vat"     label="VAT Number"      ph="300xxxxxxxxx1003" />
+            <Field k="company_address" label="Address"         ph="Riyadh, KSA" />
+            <Field k="company_phone"   label="Phone"           ph="+966 5x xxx xxxx" />
+            <Field k="company_email"   label="Email"           ph="info@company.com" />
+            <Field k="company_website" label="Website"         ph="https://company.com" />
           </div>
         )}
 
+        {/* ── FINANCE ─────────────────────────────────────── */}
         {tab === 'Finance' && (
           <div>
-            <div className="card-title" style={{ marginBottom:'1.25rem' }}>Finance Settings</div>
-            <div className="form-row">
-              <label className="label">Default Currency</label>
-              <select className="input" value={String(settings.currency||'SAR')} onChange={e=>set('currency',e.target.value)}>
-                {['SAR','USD','EUR','GBP','AED'].map(c=><option key={c}>{c}</option>)}
-              </select>
-            </div>
-            {inp('vat_rate',       'Default VAT Rate (%)', 'number', '15')}
-            {inp('fiscal_year',    'Fiscal Year Start',    'text',   'January')}
-            {inp('invoice_prefix', 'Invoice Prefix',       'text',   'INV')}
-            {inp('expense_prefix', 'Expense Prefix',       'text',   'EXP')}
-            {inp('payment_terms',  'Default Payment Terms','text',   'Net 30')}
+            <div className="card-title">Finance Settings</div>
+            <SelectField k="currency"       label="Default Currency"    options={['SAR','USD','EUR','GBP','AED','KWD','BHD','OMR','QAR']} />
+            <Field       k="vat_rate"       label="Default VAT Rate (%)" type="number" ph="15" />
+            <SelectField k="fiscal_year_start" label="Fiscal Year Start" options={['January','April','July','October']} />
+            <Field       k="invoice_prefix" label="Invoice Prefix"      ph="INV" />
+            <Field       k="expense_prefix" label="Expense Prefix"      ph="EXP" />
+            <Field       k="payment_terms"  label="Default Payment Terms" ph="Net 30" />
           </div>
         )}
 
+        {/* ── NOTIFICATIONS ───────────────────────────────── */}
         {tab === 'Notifications' && (
           <div>
-            <div className="card-title" style={{ marginBottom:'1.25rem' }}>Notification Settings</div>
-            <div className="alert alert-info" style={{ marginBottom:'1.25rem' }}>
-              Configure IONOS SMTP settings in your environment variables.<br/>
+            <div className="card-title">Notification Settings</div>
+            <div className="alert alert-info" style={{ marginBottom: '1rem' }}>
+              Configure IONOS SMTP settings in your environment variables.<br />
               SMTP: smtp.ionos.com:587 · From: erp@alpha-01.info · Reply-To: reply@alpha-01.info
             </div>
-            {inp('notif_email_on_approve', 'Send email on approval', 'text', 'true')}
-            {inp('notif_email_on_reject',  'Send email on rejection','text', 'true')}
-            {inp('notif_whatsapp_enabled', 'WhatsApp notifications', 'text', 'false')}
-            <div className="form-row">
-              <label className="label">WhatsApp on Approval</label>
-              <select className="input" value={String(settings.wa_on_approve||'false')} onChange={e=>set('wa_on_approve',e.target.value)}>
-                <option value="true">Enabled</option><option value="false">Disabled</option>
-              </select>
-            </div>
+            <SelectField k="email_on_approval"  label="Send email on approval"  options={['true','false']} />
+            <SelectField k="email_on_rejection" label="Send email on rejection" options={['true','false']} />
+            <SelectField k="whatsapp_enabled"   label="WhatsApp notifications"  options={['false','true']} />
+            <SelectField k="whatsapp_on_approval" label="WhatsApp on Approval"  options={['Enabled','Disabled']} />
           </div>
         )}
 
+        {/* ── SECURITY ────────────────────────────────────── */}
         {tab === 'Security' && (
           <div>
-            <div className="card-title" style={{ marginBottom:'1.25rem' }}>Change Password</div>
-            {passMsg && <div className="alert alert-success">{passMsg}</div>}
-            {passErr && <div className="alert alert-error">{passErr}</div>}
-            <div className="form-row">
+            <div className="card-title">Change Password</div>
+            {pwMsg && <div className="alert alert-success" style={{ marginBottom: '.85rem' }}>{pwMsg}</div>}
+            {pwErr && <div className="alert alert-error"   style={{ marginBottom: '.85rem' }}>⚠️ {pwErr}</div>}
+            <div style={{ marginBottom: '.85rem' }}>
               <label className="label">Current Password</label>
-              <input className="input" type="password" value={curPass}
-                onChange={e=>setCurPass(e.target.value)} placeholder="••••••••" />
+              <input className="input" type="password" value={curPw} onChange={e => setCurPw(e.target.value)} />
             </div>
-            <div className="form-row">
+            <div style={{ marginBottom: '.85rem' }}>
               <label className="label">New Password</label>
-              <input className="input" type="password" value={newPass}
-                onChange={e=>setNewPass(e.target.value)} placeholder="Min 8 characters" />
+              <input className="input" type="password" value={newPw} onChange={e => setNewPw(e.target.value)} placeholder="Min 8 characters" />
             </div>
-            <div className="form-row">
+            <div style={{ marginBottom: '1.1rem' }}>
               <label className="label">Confirm New Password</label>
-              <input className="input" type="password" value={confPass}
-                onChange={e=>setConfPass(e.target.value)} placeholder="Repeat new password" />
+              <input className="input" type="password" value={confPw} onChange={e => setConfPw(e.target.value)} />
             </div>
-            <button className="btn btn-primary" onClick={changePassword} disabled={changingPass}>
-              {changingPass ? <><div className="spinner" style={{width:14,height:14,borderWidth:2}}/> Updating…</> : '🔒 Change Password'}
+            <button className="btn btn-primary btn-full" onClick={changePw} disabled={savingPw}>
+              {savingPw ? '⟳ Changing…' : '🔐 Change Password'}
             </button>
           </div>
         )}
 
+        {/* ── THEME ───────────────────────────────────────── */}
         {tab === 'Theme' && (
           <div>
-            <div className="card-title" style={{ marginBottom:'1.25rem' }}>Appearance</div>
-            <div style={{ display:'flex', gap:'1rem', marginBottom:'1.5rem' }}>
-              {['dark','light'].map(t => (
-                <button key={t} onClick={toggleTheme}
-                  style={{ flex:1, padding:'1rem', background:theme===t?'var(--blue-d)':'var(--hover-bg)', border:`2px solid ${theme===t?'var(--blue)':'var(--border2)'}`, borderRadius:'var(--radius-lg)', cursor:'pointer', color:theme===t?'var(--blue)':'var(--text2)', fontWeight:600, fontSize:'.9rem' }}>
-                  {t === 'dark' ? '🌙 Dark' : '☀️ Light'}
-                  {theme === t && ' ✓'}
-                </button>
-              ))}
+            <div className="card-title">Appearance</div>
+            <div style={{ marginBottom: '1rem' }}>
+              <label className="label">Current Theme</label>
+              <div style={{ display: 'flex', gap: '.75rem', marginTop: '.5rem' }}>
+                {['dark', 'light'].map(t => (
+                  <button key={t} onClick={toggleTheme}
+                    style={{ flex: 1, padding: '.75rem', borderRadius: 'var(--radius-lg)', border: `2px solid ${theme === t ? 'var(--blue)' : 'var(--border2)'}`, background: t === 'dark' ? '#050810' : '#f1f5fb', color: t === 'dark' ? '#eef2ff' : '#0d1526', cursor: 'pointer', fontWeight: theme === t ? 700 : 400, fontSize: '.88rem' }}>
+                    {t === 'dark' ? '🌙 Dark' : '☀️ Light'}
+                    {theme === t && ' ✓'}
+                  </button>
+                ))}
+              </div>
             </div>
-            <div className="alert alert-info">Theme preference is saved locally in your browser.</div>
+            <div style={{ padding: '1rem', background: 'var(--hover-bg)', borderRadius: 'var(--radius-lg)', fontSize: '.84rem', color: 'var(--text2)' }}>
+              Theme preference is saved locally in your browser.
+            </div>
           </div>
         )}
       </div>
+
+      {/* Save button at bottom too */}
+      {isSu && tab !== 'Security' && tab !== 'Theme' && (
+        <div style={{ marginTop: '1rem' }}>
+          <button className="btn btn-primary btn-full btn-lg" onClick={save} disabled={saving}>
+            {saving ? '⟳ Saving…' : '💾 Save Settings'}
+          </button>
+        </div>
+      )}
     </div>
   )
 }

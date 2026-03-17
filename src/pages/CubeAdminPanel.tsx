@@ -59,6 +59,12 @@ export default function CubeAdminPanel() {
 
   async function saveFeatures() {
     setSaving(true)
+    try { await api.patch('/cube/features', { features }); flash('Features saved ✓') }
+    catch(e:unknown) { flash(e instanceof Error ? e.message : 'Error', true) }
+    setSaving(false)
+  }
+  async function _saveFeatures_old() {
+    setSaving(true)
     try { await api.patch('/cube/settings', { features }); flash('Features saved ✓') }
     catch(e:unknown) { flash(e instanceof Error ? e.message : 'Error', true) }
     setSaving(false)

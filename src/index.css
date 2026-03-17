@@ -392,3 +392,65 @@ button,a,[role="button"],label[for]{-webkit-tap-highlight-color:rgba(59,130,246,
     max-width: min(760px, calc(100vw - 3rem));
   }
 }
+
+/* ══ CRITICAL SCROLL FIXES ═══════════════════════════════════════════ */
+/* Enable single-finger scroll everywhere */
+html, body {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+}
+
+/* All scrollable containers */
+.erp-content,
+.sidebar-nav,
+.modal-box,
+.table-wrap,
+.kanban-board,
+.tab-bar,
+.page-content {
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+}
+
+/* Fix: prevent touch-action: manipulation from blocking scroll on containers */
+.page-content * {
+  /* Don't set touch-action on child containers that need to scroll */
+}
+
+/* Main content area - full height, scrollable */
+.erp-content {
+  overflow-y: auto;
+  overflow-x: hidden;
+  height: calc(100dvh - var(--topbar-h));
+  touch-action: pan-y pinch-zoom;
+}
+
+/* On mobile, account for bottom nav */
+@media (max-width: 768px) {
+  .erp-content {
+    height: calc(100dvh - var(--topbar-h) - 56px);
+    padding-bottom: 8px;
+  }
+}
+
+/* Buttons should not block scroll when user swipes over them */
+.btn, .nav-link, .tab-btn, .stat-card, .bottom-tab {
+  touch-action: manipulation;
+}
+
+/* Cards and containers should allow scroll */
+.card, .modal-body, .modal-box {
+  touch-action: pan-y;
+}
+
+/* Fix iOS momentum scrolling */
+.erp-content,
+.modal-box,
+.sidebar-nav {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Ensure body doesn't scroll when modal is open */
+body.modal-open {
+  overflow: hidden;
+}

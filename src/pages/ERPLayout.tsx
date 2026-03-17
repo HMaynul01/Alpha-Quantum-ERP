@@ -286,7 +286,7 @@ export default function ERPLayout() {
         </header>
 
         {/* Main content — add bottom padding for mobile nav */}
-        <main className="erp-content" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
+        <main className="erp-content" style={{ WebkitOverflowScrolling: 'touch', overflowY: 'auto', overflowX: 'hidden' }}>
           <Outlet />
         </main>
 
