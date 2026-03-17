@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Alpha Quantum ERP — Beyond The Every Limit</title>
+<meta name="description" content="Enterprise-grade cloud ERP for finance, HR, CRM, projects, assets, budgets & more. Powered by NeonDB & Vercel. Multi-tenant Cube architecture."/>
+<meta property="og:title" content="Alpha Quantum ERP — Beyond The Every Limit"/>
+<meta property="og:description" content="Enterprise ERP for modern businesses. Finance, HR, CRM, Projects, Assets & more."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Sora:wght@600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --base:#07080f;--surface:#0c0e18;--card:#111420;--card2:#161a28;
+  --border:rgba(255,255,255,.07);--border2:rgba(255,255,255,.12);
+  --blue:#3b82f6;--violet:#8b5cf6;--cyan:#22d3ee;--green:#10b981;--amber:#f59e0b;--rose:#f43f5e;
+  --text:#eef2ff;--text2:#94a3b8;--text3:#4b5675;
+  --radius:10px;--radius-lg:16px;--radius-xl:24px;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;background:var(--base);color:var(--text);line-height:1.6;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+img{max-width:100%;display:block}
+
+/* Grid bg */
+body::before{content:'';position:fixed;inset:0;
+  background:radial-gradient(ellipse 80% 50% at 20% 10%,rgba(59,130,246,.09) 0%,transparent 60%),
+             radial-gradient(ellipse 60% 50% at 80% 80%,rgba(139,92,246,.08) 0%,transparent 60%);
+  pointer-events:none;z-index:0}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:.85rem 2rem;
+  display:flex;align-items:center;justify-content:space-between;gap:1rem;
+  background:rgba(7,8,15,.88);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);
+  transition:background .3s}
+.nav-logo{display:flex;align-items:center;gap:.75rem;flex-shrink:0}
+.nav-logo img{height:38px;border-radius:8px;display:block}
+.nav-brand{font-family:'Sora',sans-serif;font-weight:900;font-size:1.1rem;
+  background:linear-gradient(135deg,#3b82f6,#8b5cf6);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.nav-links{display:flex;align-items:center;gap:1.75rem;list-style:none}
+.nav-links a{color:var(--text2);font-size:.88rem;font-weight:500;transition:color .2s}
+.nav-links a:hover{color:var(--text)}
+.nav-cta{display:flex;gap:.65rem;flex-shrink:0}
+.hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:.3rem;border:none;background:none}
+.hamburger span{display:block;width:22px;height:2px;background:var(--text2);border-radius:2px;transition:all .3s}
+.mobile-nav{display:none;position:fixed;top:60px;left:0;right:0;background:rgba(7,8,15,.96);
+  backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:1rem 2rem;z-index:99}
+.mobile-nav.open{display:block}
+.mobile-nav ul{list-style:none;display:flex;flex-direction:column;gap:.5rem;margin-bottom:1rem}
+.mobile-nav li a{display:block;padding:.6rem 0;color:var(--text2);border-bottom:1px solid var(--border)}
+.mobile-nav .nav-cta{flex-direction:column}
+
+/* BTN */
+.btn{display:inline-flex;align-items:center;gap:.4rem;padding:.6rem 1.4rem;
+  border-radius:var(--radius);font-weight:700;font-size:.88rem;cursor:pointer;
+  transition:all .2s;border:none;text-decoration:none;white-space:nowrap}
+.btn-primary{background:linear-gradient(135deg,#3b82f6,#6d28d9);color:#fff;box-shadow:0 0 24px rgba(59,130,246,.3)}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 4px 32px rgba(59,130,246,.4)}
+.btn-outline{background:transparent;color:var(--text2);border:1px solid var(--border2)}
+.btn-outline:hover{border-color:var(--blue);color:var(--blue)}
+.btn-lg{padding:.85rem 2.2rem;font-size:.95rem}
+.btn-sm{padding:.4rem 1rem;font-size:.82rem}
+
+/* SECTIONS */
+section{position:relative;z-index:1}
+.section-pad{padding:5rem 1.5rem}
+.container{max-width:1200px;margin:0 auto;width:100%}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;align-items:center;justify-content:center;
+  text-align:center;padding:7rem 1.5rem 4rem}
+.hero-badge{display:inline-flex;align-items:center;gap:.5rem;padding:.35rem 1rem;
+  background:rgba(59,130,246,.12);border:1px solid rgba(59,130,246,.25);border-radius:999px;
+  color:var(--blue);font-size:.78rem;font-weight:600;margin-bottom:1.5rem;letter-spacing:.04em}
+.hero-title{font-family:'Sora',sans-serif;font-size:clamp(2.4rem,6.5vw,4.8rem);font-weight:900;
+  line-height:1.08;margin-bottom:1.25rem;
+  background:linear-gradient(135deg,#fff 20%,#60a5fa 55%,#8b5cf6 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:-.02em}
+.hero-sub{color:var(--text2);font-size:clamp(.95rem,2.2vw,1.2rem);max-width:600px;margin:0 auto 2.5rem;line-height:1.7}
+.hero-actions{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-bottom:3.5rem}
+.hero-stats{display:flex;gap:2.5rem;justify-content:center;flex-wrap:wrap;
+  padding:1.5rem 2rem;background:rgba(255,255,255,.03);
+  border:1px solid var(--border);border-radius:var(--radius-xl);display:inline-flex}
+.stat-item{text-align:center}
+.stat-val{font-family:'Sora',sans-serif;font-size:1.75rem;font-weight:900;
+  background:linear-gradient(135deg,var(--blue),var(--violet));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.stat-lbl{color:var(--text2);font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.07em;margin-top:.2rem}
+
+/* FEATURES */
+.features-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,320px),1fr));gap:1.5rem}
+.feature-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-xl);
+  padding:1.75rem;transition:all .25s;position:relative;overflow:hidden}
+.feature-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,var(--blue),var(--violet));opacity:0;transition:opacity .25s}
+.feature-card:hover{border-color:rgba(59,130,246,.25);transform:translateY(-2px);box-shadow:0 8px 40px rgba(0,0,0,.4)}
+.feature-card:hover::before{opacity:1}
+.feature-icon{font-size:2rem;margin-bottom:1rem}
+.feature-title{font-family:'Sora',sans-serif;font-size:1.05rem;font-weight:700;color:var(--text);margin-bottom:.5rem}
+.feature-desc{font-size:.85rem;color:var(--text2);line-height:1.65}
+
+/* MODULES */
+.module-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,220px),1fr));gap:1rem}
+.module-pill{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg);
+  padding:1rem 1.1rem;display:flex;align-items:center;gap:.7rem;transition:all .2s;cursor:default}
+.module-pill:hover{border-color:rgba(59,130,246,.3);background:var(--card2)}
+.module-pill-icon{font-size:1.3rem;flex-shrink:0}
+.module-pill-name{font-weight:600;font-size:.88rem;color:var(--text)}
+.module-pill-desc{font-size:.75rem;color:var(--text2);margin-top:.1rem}
+
+/* PRICING */
+.pricing-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,260px),1fr));gap:1.5rem;align-items:start}
+.plan-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-xl);padding:1.75rem;position:relative}
+.plan-card.popular{border-color:rgba(59,130,246,.4);background:linear-gradient(135deg,rgba(59,130,246,.06),rgba(139,92,246,.06))}
+.plan-popular-badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);
+  background:linear-gradient(135deg,#3b82f6,#7c3aed);color:#fff;
+  padding:.25rem 1rem;border-radius:999px;font-size:.72rem;font-weight:700;letter-spacing:.06em;white-space:nowrap}
+.plan-name{font-family:'Sora',sans-serif;font-size:1.1rem;font-weight:800;color:var(--text);margin-bottom:.35rem}
+.plan-price{display:flex;align-items:baseline;gap:.3rem;margin-bottom:.3rem}
+.plan-amount{font-family:'Sora',sans-serif;font-size:2.25rem;font-weight:900;color:var(--text)}
+.plan-period{font-size:.8rem;color:var(--text2)}
+.plan-desc{font-size:.82rem;color:var(--text2);margin-bottom:1.25rem;line-height:1.6}
+.plan-features{list-style:none;display:flex;flex-direction:column;gap:.5rem;margin-bottom:1.5rem}
+.plan-features li{display:flex;align-items:flex-start;gap:.5rem;font-size:.84rem;color:var(--text2)}
+.plan-features li::before{content:'✓';color:var(--green);font-weight:700;flex-shrink:0;margin-top:.1rem}
+
+/* HOW IT WORKS */
+.steps-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,220px),1fr));gap:1.5rem}
+.step-card{text-align:center;padding:1.5rem 1rem}
+.step-num{width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,rgba(59,130,246,.2),rgba(139,92,246,.2));
+  border:1px solid rgba(59,130,246,.3);display:flex;align-items:center;justify-content:center;
+  font-family:'Sora',sans-serif;font-size:1.2rem;font-weight:900;color:var(--blue);margin:0 auto .85rem}
+.step-title{font-family:'Sora',sans-serif;font-weight:700;color:var(--text);margin-bottom:.4rem}
+.step-desc{font-size:.83rem;color:var(--text2);line-height:1.6}
+
+/* SECTION LABELS */
+.section-label{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--blue);
+  letter-spacing:.15em;text-transform:uppercase;margin-bottom:.6rem;display:block}
+.section-title{font-family:'Sora',sans-serif;font-size:clamp(1.75rem,4vw,2.75rem);font-weight:900;
+  color:var(--text);margin-bottom:.75rem;line-height:1.15}
+.section-sub{font-size:1rem;color:var(--text2);max-width:560px;line-height:1.7}
+
+/* CTA BANNER */
+.cta-banner{background:linear-gradient(135deg,rgba(59,130,246,.15),rgba(139,92,246,.15));
+  border:1px solid rgba(59,130,246,.2);border-radius:var(--radius-xl);padding:3.5rem 2rem;text-align:center}
+
+/* FOOTER */
+footer{background:var(--surface);border-top:1px solid var(--border);padding:3rem 1.5rem 2rem;position:relative;z-index:1}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:2rem;margin-bottom:2.5rem}
+.footer-brand-desc{font-size:.85rem;color:var(--text2);line-height:1.65;margin-top:.75rem;max-width:260px}
+.footer-col-title{font-weight:700;font-size:.9rem;color:var(--text);margin-bottom:.85rem;font-family:'Sora',sans-serif}
+.footer-links{list-style:none;display:flex;flex-direction:column;gap:.45rem}
+.footer-links a{font-size:.84rem;color:var(--text2);transition:color .2s}
+.footer-links a:hover{color:var(--blue)}
+.footer-bottom{display:flex;justify-content:space-between;align-items:center;
+  padding-top:1.5rem;border-top:1px solid var(--border);flex-wrap:wrap;gap:.75rem}
+.footer-copy{font-size:.78rem;color:var(--text3)}
+.footer-tagline{font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--text3);letter-spacing:.1em}
+
+/* DIVIDER */
+.divider{height:1px;background:linear-gradient(90deg,transparent,var(--border2),transparent);margin:0}
+
+/* SCROLL TO TOP */
+#scrollTop{position:fixed;bottom:1.5rem;right:1.5rem;width:42px;height:42px;border-radius:50%;
+  background:var(--card);border:1px solid var(--border2);color:var(--text2);cursor:pointer;
+  display:none;align-items:center;justify-content:center;font-size:1rem;z-index:200;
+  transition:all .2s;backdrop-filter:blur(8px)}
+#scrollTop.visible{display:flex}
+#scrollTop:hover{background:var(--blue);color:#fff;border-color:var(--blue)}
+
+/* MOBILE */
+@media(max-width:900px){
+  .footer-grid{grid-template-columns:1fr 1fr}
+  nav .nav-links{display:none}
+  .hamburger{display:flex}
+}
+@media(max-width:600px){
+  .footer-grid{grid-template-columns:1fr}
+  .nav-cta{display:none}
+  .hero-stats{flex-direction:column;gap:1.25rem}
+  nav{padding:.75rem 1.25rem}
+  .section-pad{padding:3.5rem 1.25rem}
+  .hero{padding:6rem 1.25rem 3rem}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="navbar">
+  <div class="nav-logo">
+    <img src="logo.png" alt="Alpha" onerror="this.style.display='none'"/>
+    <span class="nav-brand">Alpha Quantum ERP</span>
+  </div>
+  <ul class="nav-links">
+    <li><a href="#features">Features</a></li>
+    <li><a href="#modules">Modules</a></li>
+    <li><a href="#how">How It Works</a></li>
+    <li><a href="#pricing">Pricing</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <div class="nav-cta">
+    <a href="/request-cube" class="btn btn-outline btn-sm">Request Demo</a>
+    <a href="/login" class="btn btn-primary btn-sm">Sign In →</a>
+  </div>
+  <button class="hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- MOBILE NAV -->
+<div class="mobile-nav" id="mobileNav">
+  <ul>
+    <li><a href="#features" onclick="toggleMenu()">Features</a></li>
+    <li><a href="#modules" onclick="toggleMenu()">Modules</a></li>
+    <li><a href="#how" onclick="toggleMenu()">How It Works</a></li>
+    <li><a href="#pricing" onclick="toggleMenu()">Pricing</a></li>
+    <li><a href="#contact" onclick="toggleMenu()">Contact</a></li>
+  </ul>
+  <div class="nav-cta">
+    <a href="/request-cube" class="btn btn-outline">Request Demo</a>
+    <a href="/login" class="btn btn-primary">Sign In →</a>
+  </div>
+</div>
+
+<!-- HERO -->
+<section class="hero" id="home">
+  <div class="container" style="display:flex;flex-direction:column;align-items:center">
+    <div class="hero-badge">🧊 Multi-Tenant Cube Architecture · NeonDB · Vercel</div>
+    <h1 class="hero-title">Beyond The<br/>Every Limit</h1>
+    <p class="hero-sub">Enterprise-grade cloud ERP system built for modern businesses. Manage finance, HR, CRM, projects, assets, and budgets — all in one place.</p>
+    <div class="hero-actions">
+      <a href="/request-cube" class="btn btn-primary btn-lg">🚀 Start Free Trial</a>
+      <a href="#features" class="btn btn-outline btn-lg">Explore Features</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat-item"><div class="stat-val">20+</div><div class="stat-lbl">Modules</div></div>
+      <div class="stat-item"><div class="stat-val">∞</div><div class="stat-lbl">Cubes</div></div>
+      <div class="stat-item"><div class="stat-val">99.9%</div><div class="stat-lbl">Uptime</div></div>
+      <div class="stat-item"><div class="stat-val">SAR</div><div class="stat-lbl">Native Currency</div></div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- FEATURES -->
+<section class="section-pad" id="features">
+  <div class="container">
+    <div style="text-align:center;margin-bottom:3rem">
+      <span class="section-label">Core Features</span>
+      <h2 class="section-title">Everything your business needs</h2>
+      <p class="section-sub" style="margin:0 auto">Built for Saudi Arabian businesses with VAT support, SAR currency, and IONOS email integration.</p>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">💰</div>
+        <div class="feature-title">Finance & Expenses</div>
+        <div class="feature-desc">Submit, approve, and track expenses with line items, VAT calculation, receipt uploads, and PDF export. Full approval workflow.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🧾</div>
+        <div class="feature-title">Invoicing</div>
+        <div class="feature-desc">Create professional invoices, track payment status, manage client records, and generate financial reports automatically.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📊</div>
+        <div class="feature-title">Budget Tracking</div>
+        <div class="feature-desc">Set budgets by category and project. Track actual vs planned spending with visual progress bars and analytics dashboard.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">👷</div>
+        <div class="feature-title">HR Management</div>
+        <div class="feature-desc">Manage workers, Iqama numbers, attendance, timesheet, and salary payments. Built for Saudi workforce compliance.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📁</div>
+        <div class="feature-title">Project Management</div>
+        <div class="feature-desc">Track projects from planning to completion. Kanban boards, task assignment, budget allocation, and progress monitoring.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🏢</div>
+        <div class="feature-title">CRM & Leads</div>
+        <div class="feature-desc">Manage customers and leads pipeline. Track sources, assign staff, monitor conversion rates, and maximize revenue.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔐</div>
+        <div class="feature-title">Role-Based Access</div>
+        <div class="feature-desc">Granular permissions per user per module. Creator, Cube Admin, Superuser, and Staff roles. Full audit trail of every action.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🧊</div>
+        <div class="feature-title">Multi-Tenant Cubes</div>
+        <div class="feature-desc">Each company gets their own isolated Cube with separate data, users, and settings. One platform, infinite businesses.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📱</div>
+        <div class="feature-title">Mobile First</div>
+        <div class="feature-desc">Fully responsive design optimized for mobile. Submit expenses, approve invoices, and check the dashboard from anywhere.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- MODULES -->
+<section class="section-pad" id="modules" style="background:linear-gradient(135deg,rgba(59,130,246,.03),rgba(139,92,246,.03))">
+  <div class="container">
+    <div style="text-align:center;margin-bottom:3rem">
+      <span class="section-label">All Modules</span>
+      <h2 class="section-title">One platform, 20+ modules</h2>
+    </div>
+    <div class="module-grid">
+      ${[
+        ['◈','Dashboard','Live KPIs & charts'],
+        ['💰','Expenses','Submit & approve'],
+        ['🧾','Invoices','Create & track'],
+        ['💳','Wallet','Balance overview'],
+        ['✅','Approvals','Review queue'],
+        ['📊','Budget','Track & plan'],
+        ['🏗️','Assets','Asset register'],
+        ['📈','Investments','Portfolio'],
+        ['🏦','Liabilities','Debt tracking'],
+        ['👷','Workers','HR records'],
+        ['🕐','Timesheet','Attendance'],
+        ['💵','Salary','Payroll'],
+        ['🏢','Customers','CRM'],
+        ['🎯','Leads','Pipeline'],
+        ['📁','Projects','Management'],
+        ['✔️','Tasks','Kanban'],
+        ['📋','Reports','Analytics'],
+        ['👥','Users','Access control'],
+        ['🔐','Permissions','Role matrix'],
+        ['⚙️','Settings','Configuration'],
+        ['🛠️','Form Builder','Custom forms'],
+        ['👑','Creator Panel','Master control'],
+      ].map(([icon,name,desc]) => `
+        <div class="module-pill">
+          <div class="module-pill-icon">${icon}</div>
+          <div><div class="module-pill-name">${name}</div><div class="module-pill-desc">${desc}</div></div>
+        </div>`).join('')}
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- HOW IT WORKS -->
+<section class="section-pad" id="how">
+  <div class="container">
+    <div style="text-align:center;margin-bottom:3rem">
+      <span class="section-label">How It Works</span>
+      <h2 class="section-title">Get started in minutes</h2>
+    </div>
+    <div class="steps-grid">
+      <div class="step-card"><div class="step-num">1</div><div class="step-title">Request a Cube</div><div class="step-desc">Submit your company details. The creator approves and sets up your isolated workspace.</div></div>
+      <div class="step-card"><div class="step-num">2</div><div class="step-title">Set Up Your Team</div><div class="step-desc">Add users, assign roles and permissions per module. Control exactly who sees what.</div></div>
+      <div class="step-card"><div class="step-num">3</div><div class="step-title">Start Managing</div><div class="step-desc">Submit expenses, create invoices, track projects, manage HR — all from one dashboard.</div></div>
+      <div class="step-card"><div class="step-num">4</div><div class="step-title">Review & Approve</div><div class="step-desc">Admins review pending submissions, approve or reject with notes. Full audit trail kept.</div></div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- PRICING -->
+<section class="section-pad" id="pricing" style="background:linear-gradient(135deg,rgba(59,130,246,.03),rgba(139,92,246,.03))">
+  <div class="container">
+    <div style="text-align:center;margin-bottom:3rem">
+      <span class="section-label">Pricing</span>
+      <h2 class="section-title">Simple, transparent plans</h2>
+    </div>
+    <div class="pricing-grid">
+      <div class="plan-card">
+        <div class="plan-name">Free</div>
+        <div class="plan-price"><span class="plan-amount">SAR 0</span><span class="plan-period">/month</span></div>
+        <div class="plan-desc">Perfect for small teams getting started</div>
+        <ul class="plan-features">
+          <li>Up to 3 users</li><li>Finance & Expenses</li><li>Basic invoicing</li>
+          <li>1 GB storage</li><li>Email support</li>
+        </ul>
+        <a href="/request-cube" class="btn btn-outline" style="width:100%;justify-content:center">Get Started</a>
+      </div>
+      <div class="plan-card popular">
+        <div class="plan-popular-badge">MOST POPULAR</div>
+        <div class="plan-name">Starter</div>
+        <div class="plan-price"><span class="plan-amount">SAR 299</span><span class="plan-period">/month</span></div>
+        <div class="plan-desc">Everything you need for growing businesses</div>
+        <ul class="plan-features">
+          <li>Up to 10 users</li><li>All Finance modules</li><li>HR management</li>
+          <li>CRM & Leads</li><li>Budget tracking</li><li>10 GB storage</li><li>Priority support</li>
+        </ul>
+        <a href="/request-cube" class="btn btn-primary" style="width:100%;justify-content:center">Start Free Trial</a>
+      </div>
+      <div class="plan-card">
+        <div class="plan-name">Business</div>
+        <div class="plan-price"><span class="plan-amount">SAR 799</span><span class="plan-period">/month</span></div>
+        <div class="plan-desc">Advanced features for larger teams</div>
+        <ul class="plan-features">
+          <li>Up to 50 users</li><li>All modules</li><li>Projects & Tasks</li>
+          <li>Advanced reports</li><li>50 GB storage</li><li>Custom forms</li>
+        </ul>
+        <a href="/request-cube" class="btn btn-outline" style="width:100%;justify-content:center">Contact Us</a>
+      </div>
+      <div class="plan-card">
+        <div class="plan-name">Enterprise</div>
+        <div class="plan-price"><span class="plan-amount">Custom</span></div>
+        <div class="plan-desc">Unlimited users, dedicated support, SLA</div>
+        <ul class="plan-features">
+          <li>Unlimited users</li><li>All modules + API</li><li>Custom integrations</li>
+          <li>Unlimited storage</li><li>24/7 dedicated support</li><li>On-premise option</li>
+        </ul>
+        <a href="#contact" class="btn btn-outline" style="width:100%;justify-content:center">Talk to Sales</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- CTA -->
+<section class="section-pad">
+  <div class="container">
+    <div class="cta-banner">
+      <span class="section-label" style="display:block;margin-bottom:.5rem">Ready to start?</span>
+      <h2 style="font-family:'Sora',sans-serif;font-size:clamp(1.75rem,4vw,2.5rem);font-weight:900;color:var(--text);margin-bottom:1rem">Transform how you manage your business</h2>
+      <p style="color:var(--text2);margin-bottom:2rem;font-size:.95rem;max-width:500px;margin-left:auto;margin-right:auto;line-height:1.7">Join businesses already using Alpha Quantum ERP to streamline operations, track budgets, and grow faster.</p>
+      <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap">
+        <a href="/request-cube" class="btn btn-primary btn-lg">🚀 Request Your Cube</a>
+        <a href="/login" class="btn btn-outline btn-lg">Sign In</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="section-pad" id="contact" style="background:linear-gradient(135deg,rgba(59,130,246,.03),rgba(139,92,246,.03))">
+  <div class="container">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:start">
+      <div>
+        <span class="section-label">Contact Us</span>
+        <h2 class="section-title">Get in touch</h2>
+        <p style="color:var(--text2);line-height:1.7;margin-bottom:2rem">Have questions about Alpha Quantum ERP? We're here to help you get started or answer any questions about features, pricing, or implementation.</p>
+        <div style="display:flex;flex-direction:column;gap:1rem">
+          <div style="display:flex;align-items:center;gap:.75rem"><span style="font-size:1.3rem">📧</span><div><div style="font-size:.78rem;color:var(--text3);text-transform:uppercase;letter-spacing:.06em">Email</div><a href="mailto:erp@alpha-01.info" style="color:var(--blue);font-weight:600">erp@alpha-01.info</a></div></div>
+          <div style="display:flex;align-items:center;gap:.75rem"><span style="font-size:1.3rem">↩️</span><div><div style="font-size:.78rem;color:var(--text3);text-transform:uppercase;letter-spacing:.06em">Reply To</div><a href="mailto:reply@alpha-01.info" style="color:var(--blue);font-weight:600">reply@alpha-01.info</a></div></div>
+          <div style="display:flex;align-items:center;gap:.75rem"><span style="font-size:1.3rem">🌐</span><div><div style="font-size:.78rem;color:var(--text3);text-transform:uppercase;letter-spacing:.06em">Website</div><a href="https://erp.alpha-01.info" style="color:var(--blue);font-weight:600">erp.alpha-01.info</a></div></div>
+          <div style="display:flex;align-items:center;gap:.75rem"><span style="font-size:1.3rem">🏢</span><div><div style="font-size:.78rem;color:var(--text3);text-transform:uppercase;letter-spacing:.06em">Company</div><span style="color:var(--text2)">Alpha Ultimate Ltd · Riyadh, KSA</span></div></div>
+        </div>
+      </div>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius-xl);padding:2rem">
+        <h3 style="font-family:'Sora',sans-serif;font-weight:700;margin-bottom:1.5rem;color:var(--text)">Send a message</h3>
+        <form id="contactForm" onsubmit="submitContact(event)">
+          <div style="display:flex;flex-direction:column;gap:1rem">
+            <div><label style="display:block;font-size:.78rem;font-weight:600;color:var(--text2);margin-bottom:.3rem">Name</label>
+              <input type="text" id="cf-name" required style="width:100%;padding:.65rem .9rem;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);border-radius:var(--radius);color:var(--text);font-size:.875rem;outline:none;font-family:inherit;transition:border-color .15s" onfocus="this.style.borderColor='#3b82f6'" onblur="this.style.borderColor='rgba(255,255,255,.12)'" placeholder="Your name"/></div>
+            <div><label style="display:block;font-size:.78rem;font-weight:600;color:var(--text2);margin-bottom:.3rem">Email</label>
+              <input type="email" id="cf-email" required style="width:100%;padding:.65rem .9rem;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);border-radius:var(--radius);color:var(--text);font-size:.875rem;outline:none;font-family:inherit;transition:border-color .15s" onfocus="this.style.borderColor='#3b82f6'" onblur="this.style.borderColor='rgba(255,255,255,.12)'" placeholder="you@company.com"/></div>
+            <div><label style="display:block;font-size:.78rem;font-weight:600;color:var(--text2);margin-bottom:.3rem">Message</label>
+              <textarea id="cf-msg" required rows="4" style="width:100%;padding:.65rem .9rem;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);border-radius:var(--radius);color:var(--text);font-size:.875rem;outline:none;font-family:inherit;resize:vertical;transition:border-color .15s;min-height:100px" onfocus="this.style.borderColor='#3b82f6'" onblur="this.style.borderColor='rgba(255,255,255,.12)'" placeholder="How can we help?"></textarea></div>
+            <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center">Send Message →</button>
+            <div id="cf-result" style="text-align:center;font-size:.84rem;display:none"></div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <div style="display:flex;align-items:center;gap:.65rem;margin-bottom:.5rem">
+          <img src="logo.png" alt="Alpha" style="height:34px;border-radius:7px" onerror="this.style.display='none'"/>
+          <span style="font-family:'Sora',sans-serif;font-weight:900;font-size:1rem;background:linear-gradient(135deg,#3b82f6,#8b5cf6);-webkit-background-clip:text;-webkit-text-fill-color:transparent">Alpha Quantum ERP</span>
+        </div>
+        <p class="footer-brand-desc">Enterprise-grade cloud ERP system for modern Saudi businesses. Beyond the every limit.</p>
+        <p style="font-size:.75rem;color:var(--text3);margin-top:.75rem">© 2025 Alpha Ultimate Ltd. All rights reserved.</p>
+      </div>
+      <div>
+        <div class="footer-col-title">Product</div>
+        <ul class="footer-links">
+          <li><a href="#features">Features</a></li>
+          <li><a href="#modules">Modules</a></li>
+          <li><a href="#pricing">Pricing</a></li>
+          <li><a href="/request-cube">Request Demo</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-col-title">Platform</div>
+        <ul class="footer-links">
+          <li><a href="/login">Sign In</a></li>
+          <li><a href="/request-cube">New Business</a></li>
+          <li><a href="#how">How It Works</a></li>
+          <li><a href="#contact">Support</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-col-title">Contact</div>
+        <ul class="footer-links">
+          <li><a href="mailto:erp@alpha-01.info">erp@alpha-01.info</a></li>
+          <li><a href="mailto:reply@alpha-01.info">reply@alpha-01.info</a></li>
+          <li><a href="https://erp.alpha-01.info">erp.alpha-01.info</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span class="footer-copy">© 2025 Alpha Ultimate Ltd. All rights reserved.</span>
+      <span class="footer-tagline">BEYOND THE EVERY LIMIT · erp.alpha-01.info</span>
+    </div>
+  </div>
+</footer>
+
+<button id="scrollTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+function toggleMenu(){
+  var m = document.getElementById('mobileNav')
+  m.classList.toggle('open')
+}
+// Close mobile nav on outside click
+document.addEventListener('click',function(e){
+  var nav = document.getElementById('mobileNav')
+  var btn = document.getElementById('hamburger')
+  if(nav.classList.contains('open') && !nav.contains(e.target) && !btn.contains(e.target)){
+    nav.classList.remove('open')
+  }
+})
+// Scroll to top button
+window.addEventListener('scroll',function(){
+  var btn = document.getElementById('scrollTop')
+  if(window.scrollY > 400) btn.classList.add('visible')
+  else btn.classList.remove('visible')
+})
+// Smooth scroll for all anchors
+document.querySelectorAll('a[href^="#"]').forEach(function(a){
+  a.addEventListener('click',function(e){
+    var id = this.getAttribute('href').slice(1)
+    var el = document.getElementById(id)
+    if(el){ e.preventDefault(); el.scrollIntoView({behavior:'smooth'}) }
+  })
+})
+// Contact form
+function submitContact(e){
+  e.preventDefault()
+  var result = document.getElementById('cf-result')
+  var btn = e.target.querySelector('button[type=submit]')
+  btn.textContent = 'Sending…'
+  btn.disabled = true
+  // Simulate send (replace with actual API call if needed)
+  setTimeout(function(){
+    result.style.display = 'block'
+    result.style.color = '#34d399'
+    result.textContent = '✓ Message sent! We\'ll reply to ' + document.getElementById('cf-email').value
+    btn.textContent = '✓ Sent!'
+    document.getElementById('contactForm').reset()
+  }, 1200)
+}
+</script>
+</body>
+</html>

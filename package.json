@@ -1,0 +1,47 @@
+{
+  "name": "alpha-quantum-erp",
+  "version": "18.0.0",
+  "description": "Alpha Quantum ERP v18 \u2014 NeonDB + Vercel | erp.alpha-01.info",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "start": "node server.js",
+    "typecheck": "tsc --noEmit",
+    "deploy": "vercel --prod",
+    "deploy:preview": "vercel",
+    "env:setup": "bash scripts/setup-env.sh"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.600.0",
+    "@aws-sdk/s3-request-presigner": "^3.600.0",
+    "@neondatabase/serverless": "^0.9.4",
+    "express": "^4.19.2",
+    "jspdf": "^2.5.1",
+    "jspdf-autotable": "^3.8.2",
+    "nodemailer": "^6.9.14",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.23.1",
+    "recharts": "^2.12.7",
+    "sirv": "^2.0.4",
+    "ws": "^8.18.0",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.3.1",
+    "autoprefixer": "^10.4.19",
+    "postcss": "^8.4.38",
+    "tailwindcss": "^3.4.6",
+    "typescript": "^5.4.5",
+    "vite": "^5.3.1"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
